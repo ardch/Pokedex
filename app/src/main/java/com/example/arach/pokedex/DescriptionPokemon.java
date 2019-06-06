@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,11 +23,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 public class DescriptionPokemon extends AppCompatActivity {
 
-    private String name , baseStat, stat_name;
     private ImageView upleft, upright, downleft, downright;
     private JSONObject obj_result;
 
@@ -39,10 +36,11 @@ public class DescriptionPokemon extends AppCompatActivity {
         setContentView(R.layout.activity_despokemon);
 
         Intent intent = getIntent();
-        name = intent.getStringExtra("name");
+        String name = intent.getStringExtra("name");
         new JsonTask().execute("https://pokeapi.co/api/v2/pokemon/" + name);
 
         TextView tName = findViewById(R.id.pokeName);
+        name = name.substring(0,1).toUpperCase() + name.substring(1);
         tName.setText(name);
     }
 
@@ -106,7 +104,7 @@ public class DescriptionPokemon extends AppCompatActivity {
         }*/
             try {
                 /* Data to JSON */
-                String frontPoke, backPoke, sFrontPoke, sBackPoke, txt, speed, spdef, spatk, def, atk;
+                String frontPoke, backPoke, sFrontPoke, sBackPoke, txt, type;
                 TextView tSpeed, tSpdef, tSpatk, tDef, tAtk;
 
                 JSONObject obj_result = new JSONObject(result);
@@ -132,18 +130,22 @@ public class DescriptionPokemon extends AppCompatActivity {
                 tSpatk = findViewById(R.id.tSpatk);
                 tAtk = findViewById(R.id.tAtk);
                 tDef = findViewById(R.id.tDef);
+                TextView tType = findViewById(R.id.tType);
 
                 obj_result = new JSONObject(result);
                 JSONArray stats = obj_result.getJSONArray("stats");
+                JSONArray types = obj_result.getJSONArray("types");
 
                 for (int i=0; i<stats.length(); i++){
                     String stat = stats.getJSONObject(i).getString("stat");
-                    baseStat = stats.getJSONObject(i).getString("base_stat");
 
                     JSONObject obj_stat = new JSONObject(stat);
-                    stat_name = obj_stat.getString("name");
+                    String stat_name = obj_stat.getString("name");
+
+                    String baseStat = stats.getJSONObject(i).getString("base_stat");
 
                     txt = stat_name + " : " + baseStat;
+                    txt = txt.substring(0,1).toUpperCase() + txt.substring(1);
                     switch(stat_name){
                         case "speed" :
                             tSpeed.setText(txt); break;
@@ -159,6 +161,27 @@ public class DescriptionPokemon extends AppCompatActivity {
                                 tSpeed.setText(txt);
                     }
                 }
+
+                ArrayList<String> array_type = new ArrayList<>();
+
+                for (int i=0; i<types.length(); i++){
+                    type = types.getJSONObject(i).getString("type");
+                    JSONObject obj_type = new JSONObject(type);
+                    array_type.add(obj_type.getString("name"));
+                }
+                Collections.sort(array_type);
+                String t = "";
+                for (Object o : array_type){
+                    if (t.matches("")){
+                        t = o.toString();
+                    }
+                    else {
+                        t = t + ", " + o.toString();
+                    }
+                }
+                t = "Type : " + t.substring(0,1).toUpperCase() + t.substring(1);
+                tType.setText(t);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }

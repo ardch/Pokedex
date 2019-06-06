@@ -82,4 +82,10 @@ public class AdapterListPokemon extends RecyclerView.Adapter<AdapterListPokemon.
         void onItemClick(View view, int position);
         void onItemLongClick(View view, int position);
     }
+
+    public void removePokemon (int position){
+        name_pokemon.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, name_pokemon.size());
+    }
 }

@@ -1,6 +1,8 @@
 package com.example.arach.pokedex;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -35,13 +37,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button button1 = findViewById(R.id.button1);
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new JsonTask().execute("https://pokeapi.co/api/v2/pokemon/");
-            }
-        });
+        new JsonTask().execute("https://pokeapi.co/api/v2/pokemon/");
     }
 
     private class JsonTask extends AsyncTask<String, String, String> implements AdapterListPokemon.ItemClickListener {
@@ -132,8 +128,23 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onItemLongClick(View view, int position) {
-            Toast.makeText(MainActivity.this, "Long Click", Toast.LENGTH_SHORT).show();
+        public void onItemLongClick(View view, final int position) {
+            String name = adapter.getName(position);
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            String dialogMsg = getResources().getString(R.string.dialog_message) + " " + name;
+            builder.setMessage(dialogMsg).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    adapter.removePokemon(position);
+                    Toast.makeText(MainActivity.this, "Pokemon Removed", Toast.LENGTH_SHORT).show();
+                }
+            }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
     }
 }

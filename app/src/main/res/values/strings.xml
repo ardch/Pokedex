@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Pokedex</string>
+    <string name="dialog_message">ต้องการลบ</string>
+    <string name="name">Digio Pokedex</string>
 </resources>
